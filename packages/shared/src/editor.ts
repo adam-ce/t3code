@@ -59,7 +59,11 @@ export const resolveEditorCommand = Effect.fn("editor.resolveEditorCommand")(fun
 
   if (platform === "darwin") {
     const macExecutable = jetbrains ? command : macBundleExecutables[editor.id];
-    const roots = [...(home ? [path.join(home, "Applications")] : []), "/Applications"];
+    const roots = [
+      ...(home ? [path.join(home, "Applications")] : []),
+      "/Applications",
+      ...(editor.id === "qtcreator" && home ? [path.join(home, "Qt")] : []),
+    ];
     for (const root of roots) {
       // JetBrains Toolbox installs bundles named after the app and its version
       // (`IntelliJ IDEA 2026.1.4.app`), so list the directory and accept
@@ -129,6 +133,9 @@ export const resolveEditorCommand = Effect.fn("editor.resolveEditorCommand")(fun
           );
         }
       }
+    }
+    if (editor.id === "qtcreator") {
+      candidates.push("C:\\Qt\\Tools\\QtCreator\\bin\\qtcreator.exe");
     }
   } else if (platform === "linux") {
     const dirs = [
